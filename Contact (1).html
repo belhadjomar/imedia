@@ -7,32 +7,63 @@
   <link rel="stylesheet" href="contact.css" />
 </head>
 <script>
+function chargerAvis() {
+  let avis = JSON.parse(localStorage.getItem("avisClients")) || [];
+
+  avis.forEach(a => {
+    afficherAvis(a.nom, a.message, a.note, a.date);
+  });
+}
+
+function afficherAvis(nom, message, note, date) {
+  let div = document.createElement("div");
+  div.className = "avis-client";
+
+  div.innerHTML = `
+    <h3>${nom} <span>${note}</span></h3>
+    <p class="date">${date}</p>
+    <p>${message}</p>
+  `;
+
+  document.getElementById("nouveaux-avis").prepend(div);
+}
+
 function ajouterAvis() {
   let nom = document.getElementById("nom").value;
   let message = document.getElementById("message").value;
   let note = document.getElementById("note").value;
 
   if (nom === "" || message === "") {
-    alert("Remplissez tous les champs");
+    alert("Veuillez remplir tous les champs");
     return;
   }
 
-  let div = document.createElement("div");
-  div.className = "avis-client";
+  let date = new Date().toLocaleDateString("fr-FR");
 
-  div.innerHTML = `
-    <h3>${nom} <span>${note}</span></h3>
-    <p class="date">Aujourd'hui</p>
-    <p>${message}</p>
-  `;
+  let avis = {
+    nom: nom,
+    message: message,
+    note: note,
+    date: date
+  };
 
-  document.getElementById("nouveaux-avis").prepend(div);
+  // Afficher مباشرة
+  afficherAvis(nom, message, note, date);
 
-  // clear form
+  // Sauvegarder في localStorage
+  let anciensAvis = JSON.parse(localStorage.getItem("avisClients")) || [];
+  anciensAvis.push(avis);
+  localStorage.setItem("avisClients", JSON.stringify(anciensAvis));
+
+  // Vider le formulaire
   document.getElementById("nom").value = "";
   document.getElementById("message").value = "";
 }
+
+// Charger les avis au démarrage de la page
+window.onload = chargerAvis;
 </script>
+
 
 <body>
    <header class="site-header">
@@ -164,3 +195,4 @@ function ajouterAvis() {
 
 </body>
 </html>
+
